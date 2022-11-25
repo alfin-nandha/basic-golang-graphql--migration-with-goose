@@ -13,4 +13,5 @@ type Resolver struct {
 	BOOKSTORE  []*model.Book
 	BOOKSERV   services.BookService
 	AUTHORSERV services.AuthorService
+	GENRESERV  services.GenreService
 }

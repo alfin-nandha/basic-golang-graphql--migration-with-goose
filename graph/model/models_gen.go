@@ -2,15 +2,10 @@
 
 package model
 
-import (
-	"fmt"
-	"io"
-	"strconv"
-)
-
 type Author struct {
-	Name string  `json:"name"`
-	Mail *string `json:"mail"`
+	AuthorID *string `json:"author_id"`
+	Name     string  `json:"name"`
+	Mail     *string `json:"mail"`
 }
 
 type AuthorInput struct {
@@ -19,16 +14,16 @@ type AuthorInput struct {
 }
 
 type Book struct {
-	Title   string     `json:"title"`
-	BookID  *string    `json:"book_id"`
-	Genre   *BookGenre `json:"genre"`
-	Authors []*Author  `json:"authors"`
+	Name    string  `json:"name"`
+	BookID  *string `json:"book_id"`
+	Genre   *string `json:"genre"`
+	Authors string  `json:"authors"`
 }
 
 type BookInput struct {
-	Title   string         `json:"title"`
-	Genre   *BookGenre     `json:"genre"`
-	Authors []*AuthorInput `json:"authors"`
+	Name    string  `json:"name"`
+	Genre   *string `json:"genre"`
+	Authors *string `json:"authors"`
 }
 
 type DeleteStatus struct {
@@ -36,15 +31,34 @@ type DeleteStatus struct {
 	Description *string `json:"description"`
 }
 
-type GetBookResult struct {
+type Genre struct {
+	GenreID *string `json:"genre_id"`
+	Name    *string `json:"name"`
+}
+
+type GenreInput struct {
+	Name string `json:"name"`
+}
+
+type GetAuthor struct {
+	Isexists bool    `json:"isexists"`
+	Author   *Author `json:"author"`
+}
+
+type GetBook struct {
 	Isexists bool  `json:"isexists"`
 	Book     *Book `json:"book"`
+}
+
+type GetGenre struct {
+	Isexists bool   `json:"isexists"`
+	Genre    *Genre `json:"genre"`
 }
 
 type PostStatus struct {
 	Iserror     bool    `json:"iserror"`
 	Description *string `json:"description"`
-	BookID      *string `json:"book_id"`
+	ID          *string `json:"id"`
 }
 
 type PutStatus struct {
@@ -57,50 +71,14 @@ type UpdateAuthorInput struct {
 	Mail *string `json:"mail"`
 }
 
-type UpdateInput struct {
-	BookID  string               `json:"book_id"`
-	Title   *string              `json:"title"`
-	Genre   *BookGenre           `json:"genre"`
-	Authors []*UpdateAuthorInput `json:"authors"`
+type UpdateBookInput struct {
+	BookID  string  `json:"book_id"`
+	Name    *string `json:"name"`
+	Genre   *string `json:"genre"`
+	Authors *string `json:"authors"`
 }
 
-type BookGenre string
-
-const (
-	BookGenreFiction    BookGenre = "FICTION"
-	BookGenreNonfiction BookGenre = "NONFICTION"
-)
-
-var AllBookGenre = []BookGenre{
-	BookGenreFiction,
-	BookGenreNonfiction,
-}
-
-func (e BookGenre) IsValid() bool {
-	switch e {
-	case BookGenreFiction, BookGenreNonfiction:
-		return true
-	}
-	return false
-}
-
-func (e BookGenre) String() string {
-	return string(e)
-}
-
-func (e *BookGenre) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = BookGenre(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid BookGenre", str)
-	}
-	return nil
-}
-
-func (e BookGenre) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
+type UpdateGenreInput struct {
+	GenreID string  `json:"genre_id"`
+	Name    *string `json:"name"`
 }

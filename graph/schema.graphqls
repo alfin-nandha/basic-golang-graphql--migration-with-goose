@@ -1,32 +1,85 @@
 type Query {
-    book(book_id : ID!): GetBookResult
+    book(book_id : ID!): GetBook
     books: [Book]
-    getbooks(getgenre: BookGenre = FICTION): [Book]
+    genre(genre_id : ID!): GetGenre
+    genres: [Genre]
+    author(author_id : ID!): GetAuthor
+    authors: [Author]
 }
 type Mutation {
-    add_book(input: BookInput!): PostStatus
     add_author(input: AuthorInput!): PostStatus
-    update_book(input: UpdateInput): PutStatus
+    update_author(input: UpdateAuthorInput): PutStatus
+    add_genre(input: GenreInput!): PostStatus
+    update_genre(input: UpdateGenreInput): PutStatus
+    add_book(input: BookInput!): PostStatus
+    update_book(input: UpdateBookInput): PutStatus
     delete_book(book_id: ID!): DeleteStatus
 }
-input UpdateInput{
-    book_id: ID!
-    title: String
-    genre: BookGenre
-    authors: [UpdateAuthorInput]
+
+# AUTHOR SCHEMAS
+type Author{
+    author_id: ID
+    name: String!
+    mail: String
+}
+type GetAuthor{
+    isexists: Boolean!
+    author: Author
+}
+input AuthorInput{
+    name: String!
+    mail: String
 }
 input UpdateAuthorInput{
     name: String
     mail: String
 }
-input BookInput{
-    title: String!
-    genre: BookGenre
-    authors: [AuthorInput]!
-}
-input AuthorInput{
+
+# BOOK SCHEMAS
+type Book{
     name: String!
-    mail: String
+    book_id: ID
+    genre: String
+    authors: String!
+}
+type GetBook{
+    isexists: Boolean!
+    book: Book
+}
+input BookInput{
+    name: String!
+    genre: String
+    authors: String
+}
+input UpdateBookInput{
+    book_id: ID!
+    name: String
+    genre: String
+    authors: String
+}
+
+# GENRE SCHEMAS
+type Genre{
+    genre_id: ID
+    name: String
+}
+type GetGenre{
+    isexists: Boolean!
+    genre: Genre
+}
+input GenreInput{
+    name: String!
+}
+input UpdateGenreInput{
+    genre_id: ID!
+    name: String
+}
+
+# RESPONSE SCHEMAS
+type PostStatus{
+    iserror: Boolean!
+    description: String
+    id: ID
 }
 type PutStatus{
     iserror: Boolean!
@@ -35,27 +88,4 @@ type PutStatus{
 type DeleteStatus{
     iserror: Boolean!
     description: String
-}
-type PostStatus{
-    iserror: Boolean!
-    description: String
-    book_id: ID
-}
-type Author{
-    name: String!
-    mail: String
-}
-type Book{
-    title: String!
-    book_id: ID
-    genre: BookGenre
-    authors: [Author]!
-}
-type GetBookResult{
-    isexists: Boolean!
-    book: Book
-}
-enum BookGenre {
-    FICTION
-    NONFICTION
 }

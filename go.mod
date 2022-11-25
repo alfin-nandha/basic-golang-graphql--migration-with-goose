@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/jinzhu/copier v0.3.5
 	github.com/joho/godotenv v1.4.0
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
