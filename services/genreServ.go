@@ -10,6 +10,7 @@ import (
 type GenreService interface {
 	AddGenre(model.GenreInput) (model.Genre, error)
 	GetAllGenre() ([]*model.Genre, error)
+	DeleteGenre(id string) error
 }
 
 type GenreRepo struct {
@@ -42,4 +43,8 @@ func (r *GenreRepo) GetAllGenre() ([]*model.Genre, error) {
 	copier.Copy(&genreGraph, genreRepo)
 
 	return genreGraph, err
+}
+
+func (r *GenreRepo) DeleteGenre(id string) error {
+	return r.genreData.DeleteGenre(id)
 }

@@ -85,7 +85,9 @@ type ComplexityRoot struct {
 		AddAuthor    func(childComplexity int, input model.AuthorInput) int
 		AddBook      func(childComplexity int, input model.BookInput) int
 		AddGenre     func(childComplexity int, input model.GenreInput) int
+		DeleteAuthor func(childComplexity int, authorID string) int
 		DeleteBook   func(childComplexity int, bookID string) int
+		DeleteGenre  func(childComplexity int, genreID string) int
 		UpdateAuthor func(childComplexity int, input *model.UpdateAuthorInput) int
 		UpdateBook   func(childComplexity int, input *model.UpdateBookInput) int
 		UpdateGenre  func(childComplexity int, input *model.UpdateGenreInput) int
@@ -115,8 +117,10 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	AddAuthor(ctx context.Context, input model.AuthorInput) (*model.PostStatus, error)
 	UpdateAuthor(ctx context.Context, input *model.UpdateAuthorInput) (*model.PutStatus, error)
+	DeleteAuthor(ctx context.Context, authorID string) (*model.DeleteStatus, error)
 	AddGenre(ctx context.Context, input model.GenreInput) (*model.PostStatus, error)
 	UpdateGenre(ctx context.Context, input *model.UpdateGenreInput) (*model.PutStatus, error)
+	DeleteGenre(ctx context.Context, genreID string) (*model.DeleteStatus, error)
 	AddBook(ctx context.Context, input model.BookInput) (*model.PostStatus, error)
 	UpdateBook(ctx context.Context, input *model.UpdateBookInput) (*model.PutStatus, error)
 	DeleteBook(ctx context.Context, bookID string) (*model.DeleteStatus, error)
@@ -300,6 +304,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddGenre(childComplexity, args["input"].(model.GenreInput)), true
 
+	case "Mutation.delete_author":
+		if e.complexity.Mutation.DeleteAuthor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delete_author_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteAuthor(childComplexity, args["author_id"].(string)), true
+
 	case "Mutation.delete_book":
 		if e.complexity.Mutation.DeleteBook == nil {
 			break
@@ -311,6 +327,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteBook(childComplexity, args["book_id"].(string)), true
+
+	case "Mutation.delete_genre":
+		if e.complexity.Mutation.DeleteGenre == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delete_genre_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteGenre(childComplexity, args["genre_id"].(string)), true
 
 	case "Mutation.update_author":
 		if e.complexity.Mutation.UpdateAuthor == nil {
@@ -525,8 +553,10 @@ var sources = []*ast.Source{
 type Mutation {
     add_author(input: AuthorInput!): PostStatus
     update_author(input: UpdateAuthorInput): PutStatus
+    delete_author(author_id: ID!): DeleteStatus
     add_genre(input: GenreInput!): PostStatus
     update_genre(input: UpdateGenreInput): PutStatus
+    delete_genre(genre_id: ID!): DeleteStatus
     add_book(input: BookInput!): PostStatus
     update_book(input: UpdateBookInput): PutStatus
     delete_book(book_id: ID!): DeleteStatus
@@ -658,6 +688,21 @@ func (ec *executionContext) field_Mutation_add_genre_args(ctx context.Context, r
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_delete_author_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["author_id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("author_id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["author_id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_delete_book_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -670,6 +715,21 @@ func (ec *executionContext) field_Mutation_delete_book_args(ctx context.Context,
 		}
 	}
 	args["book_id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_delete_genre_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["genre_id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("genre_id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["genre_id"] = arg0
 	return args, nil
 }
 
@@ -1676,6 +1736,64 @@ func (ec *executionContext) fieldContext_Mutation_update_author(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_delete_author(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_delete_author(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteAuthor(rctx, fc.Args["author_id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.DeleteStatus)
+	fc.Result = res
+	return ec.marshalODeleteStatus2ᚖbasicGraphqlᚋgraphᚋmodelᚐDeleteStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_delete_author(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "iserror":
+				return ec.fieldContext_DeleteStatus_iserror(ctx, field)
+			case "description":
+				return ec.fieldContext_DeleteStatus_description(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_delete_author_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_add_genre(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_add_genre(ctx, field)
 	if err != nil {
@@ -1788,6 +1906,64 @@ func (ec *executionContext) fieldContext_Mutation_update_genre(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_update_genre_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_delete_genre(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_delete_genre(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteGenre(rctx, fc.Args["genre_id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.DeleteStatus)
+	fc.Result = res
+	return ec.marshalODeleteStatus2ᚖbasicGraphqlᚋgraphᚋmodelᚐDeleteStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_delete_genre(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "iserror":
+				return ec.fieldContext_DeleteStatus_iserror(ctx, field)
+			case "description":
+				return ec.fieldContext_DeleteStatus_description(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_delete_genre_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4911,6 +5087,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_update_author(ctx, field)
 			})
 
+		case "delete_author":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_delete_author(ctx, field)
+			})
+
 		case "add_genre":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -4921,6 +5103,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_update_genre(ctx, field)
+			})
+
+		case "delete_genre":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_delete_genre(ctx, field)
 			})
 
 		case "add_book":

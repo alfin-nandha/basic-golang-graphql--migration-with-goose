@@ -10,6 +10,7 @@ import (
 type AuthorService interface {
 	AddAuthor(model.AuthorInput) (model.Author, error)
 	GetAllAuthor() ([]*model.Author, error)
+	DeleteAuthor(id string) error
 }
 
 type AuthorRepo struct {
@@ -39,4 +40,9 @@ func (r *AuthorRepo) GetAllAuthor() (result []*model.Author, err error) {
 
 	copier.Copy(&result, authorsRepo)
 	return result, err
+}
+
+func (r *AuthorRepo) DeleteAuthor(id string) error {
+	err := r.AuthorData.DeleteAuthor(id)
+	return err
 }

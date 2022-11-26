@@ -12,7 +12,6 @@ import (
 
 // AddAuthor is the resolver for the add_author field.
 func (r *mutationResolver) AddAuthor(ctx context.Context, input model.AuthorInput) (*model.PostStatus, error) {
-
 	author, err := r.AUTHORSERV.AddAuthor(input)
 
 	des := "success add author"
@@ -38,6 +37,26 @@ func (r *mutationResolver) UpdateAuthor(ctx context.Context, input *model.Update
 	panic(fmt.Errorf("not implemented: UpdateAuthor - update_author"))
 }
 
+// DeleteAuthor is the resolver for the delete_author field.
+func (r *mutationResolver) DeleteAuthor(ctx context.Context, authorID string) (*model.DeleteStatus, error) {
+	err := r.AUTHORSERV.DeleteAuthor(authorID)
+
+	des := "success delete author"
+	response := model.DeleteStatus{
+		Iserror:     false,
+		Description: &des,
+	}
+
+	if err != nil {
+		des = "fail delete author"
+		response = model.DeleteStatus{
+			Iserror:     true,
+			Description: &des,
+		}
+	}
+	return &response, err
+}
+
 // AddGenre is the resolver for the add_genre field.
 func (r *mutationResolver) AddGenre(ctx context.Context, input model.GenreInput) (*model.PostStatus, error) {
 	result, err := r.GENRESERV.AddGenre(input)
@@ -61,6 +80,25 @@ func (r *mutationResolver) AddGenre(ctx context.Context, input model.GenreInput)
 // UpdateGenre is the resolver for the update_genre field.
 func (r *mutationResolver) UpdateGenre(ctx context.Context, input *model.UpdateGenreInput) (*model.PutStatus, error) {
 	panic(fmt.Errorf("not implemented: UpdateGenre - update_genre"))
+}
+
+// DeleteGenre is the resolver for the delete_genre field.
+func (r *mutationResolver) DeleteGenre(ctx context.Context, genreID string) (*model.DeleteStatus, error) {
+	err := r.GENRESERV.DeleteGenre(genreID)
+	des := "success delete genre"
+	response := model.DeleteStatus{
+		Iserror:     false,
+		Description: &des,
+	}
+
+	if err != nil {
+		des = "fail delete genre"
+		response = model.DeleteStatus{
+			Iserror:     true,
+			Description: &des,
+		}
+	}
+	return &response, err
 }
 
 // AddBook is the resolver for the add_book field.

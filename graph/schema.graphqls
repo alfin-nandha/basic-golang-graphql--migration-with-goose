@@ -9,8 +9,10 @@ type Query {
 type Mutation {
     add_author(input: AuthorInput!): PostStatus
     update_author(input: UpdateAuthorInput): PutStatus
+    delete_author(author_id: ID!): DeleteStatus
     add_genre(input: GenreInput!): PostStatus
     update_genre(input: UpdateGenreInput): PutStatus
+    delete_genre(genre_id: ID!): DeleteStatus
     add_book(input: BookInput!): PostStatus
     update_book(input: UpdateBookInput): PutStatus
     delete_book(book_id: ID!): DeleteStatus
